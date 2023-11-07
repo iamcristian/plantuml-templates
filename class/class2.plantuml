@@ -1,0 +1,47 @@
+@startuml
+
+package "gui" {
+	Game --> "1" Player_manager
+	Game --> "1" Display_manager
+
+	abstract Updatable
+
+	Players_layout --|> Updatable
+	Player_manager --|> Updatable
+	Display_manager --|> Updatable
+	Character --|> Updatable
+	InputBox --|> Updatable
+
+	abstract Gui_control
+
+	Players_layout --|> Gui_control
+	Player_manager --|> Gui_control
+	Display_manager --|> Gui_control
+
+	Display_manager --> "1" InputBox
+	Display_manager --> "1" Player_manager 
+	Display_manager --> "1" Players_layout
+
+	Player_manager --> "1..*" Character
+}
+
+package "connection" {
+	Network --> "1" ConnectionManager
+}
+
+package "model" {
+	Game_state --> "1..*" Player
+	Game_state --> "*" Collectable
+}	
+
+package "control" {
+	Katch --> "1" Game_state
+	Katch "1" -- "1" ConnectionManager
+	Gui_control --> "1" Katch
+}
+
+class Updatable {
+	void update()
+}
+
+@enduml

@@ -1,0 +1,180 @@
+@startuml
+Hide circle
+
+note "Character Combat and Dependencies\nAuthors: Sean Harris and Ranger Adams\nEdited By Greg Donaldson\nReviewed by Justin Hall & E. Thompson" as N1
+
+package PossessionInfo {
+	class PossessionDeck
+	class Possession
+	class Ship
+	class Companion
+}
+
+package Units {
+	class Character
+	class IrateLocals
+	class Creatures
+	class MilitaryUnit
+}
+
+package Stacks {
+	class AttackerStack
+	class DefenderStack
+}
+
+class PossessionDeck {
+	availablePossessions : list
+	updatePossessionDeck()
+}
+
+PossessionDeck o-- Possession
+
+class Possession {
+	name : str
+	type : str
+	description : str
+	attackModifier : int
+	damageModifier : int
+	bonusDrawModifier : int
+	removeWounds()
+	repairCheck()
+}
+
+Possession o-- Ship
+Possession o-- Companion
+
+
+class Ship {
+	name : string
+	cannons : int
+	shields : int
+	maneuver : int
+	maxPassengers : int
+}
+
+class Companion {
+	name : string
+	combatBonus : int
+	intelligenceBonus : int
+	diplomacyBonus : int
+	navigationBonus : int
+	special : list
+	getSpecial()
+}
+
+Character - Possession : < Assigned
+
+class Character {
+	allegiance : string (Rebel or Imperial)
+	name : string
+	title : string
+	combat : int
+	endurance : int
+	intelligence : int
+	leadership : int
+	diplomacy : int
+	navigation : int
+	homePlanet : string
+	effectiveCombatRating : int
+	wounds : int
+	leader : boolean
+	detected : boolean
+	captured : boolean
+	active : boolean
+	bonusDraws : list
+}
+
+MissionGroupStack *-- Character
+
+class MissionGroupStack {
+	effectiveCombatRating : int
+	currentMission : char
+	bonusDraws : list
+}
+
+MissionGroupStack - MissionDeck : Selects >
+MissionGroupStack - MilitaryUnit : > Can Effect 
+
+class MissionDeck {
+	availableMissions : list
+	updateMissionDeck()
+}
+
+Mission - MissionGroupStack : < Assigned
+Mission o- MissionDeck
+Mission - IrateLocals : Can Create >
+Mission - Creatures : Can Create >
+
+class Mission {
+	name : string
+	type : char
+	description : string
+	actionEventCheck()
+}
+
+DefenderStack *-- Character
+DefenderStack *-- MissionGroupStack
+
+class DefenderStack {
+	defenderType : list
+	defenseDifferential : dictionary
+	defenseModifier : list
+	retaliate()
+	breakOff()
+	inactive()
+	applyWounds()
+	updateCombatRating()
+}
+
+AttackerStack - DefenderStack : Attacks >
+AttackerStack *-- Character
+AttackerStack *-- IrateLocals
+AttackerStack *-- Creatures
+AttackerStack *-- MilitaryUnit
+
+class AttackerStack {
+	attackerType : list
+	attackDifferential : dictionary
+	attackModifier : list
+	currentRound : int
+	attack()
+	capture()
+	applyWounds()
+	updateCombatRating()
+	updateModifiers()
+}
+
+class IrateLocals {
+	type : string
+	name : string
+	combat : int
+	endurance : int
+	homePlanet : string
+	attackType : string
+	effectiveCombatRating : int
+	wounds : int
+	getType()
+}
+
+Creatures <|-- IrateLocals
+
+class Creatures {
+	combatShift : int
+	breakOffModifier : int
+	bonusDrawModifier : int
+	getSpecial()
+}
+
+class MilitaryUnit {
+	allegiance : string (Rebel or Imperial)
+	type : string
+	name : string
+	combat : int
+	endurance : int
+	environType : string
+	effectiveCombatRating : int
+	wounds : int
+}
+
+
+@enduml
